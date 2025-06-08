@@ -4,6 +4,7 @@ import LivePreview from './LivePreview';
 import templates from './templates';
 import { exportProjectAsZip } from '../core/ExportService'; // Import export function
 import { applyNodeChanges, applyEdgeChanges, addEdge as rfAddEdge } from 'reactflow';
+import TextToAppInterface from '../components/TextToAppInterface';
 
 let globalScreenId = 0;
 const getScreenId = () => `screen_${globalScreenId++}`;
@@ -27,6 +28,7 @@ const onDragStart = (event, nodeType, nodeLabel) => {
 const EditorView = () => {
   const [screens, setScreens] = useState([createNewScreen('Screen 1')]);
   const [activeScreenId, setActiveScreenId] = useState(screens[0].id);
+  const [showAIInterface, setShowAIInterface] = useState(false);
 
   const activeScreen = screens.find(s => s.id === activeScreenId) || screens[0];
 
@@ -112,10 +114,61 @@ const EditorView = () => {
     exportProjectAsZip(screens, activeScreenId, 'MyAwesomeApp');
   };
 
+  const handleAppGenerated = (appStructure) => {
+    // Convert AI-generated structure to our screen format
+    const newScreens = appStructure.screens.map(screen => ({
+      id: screen.id,
+      name: screen.name,
+      nodes: screen.components.map(comp => ({
+        id: comp.id,
+        type: 'uiComponentNode',
+        position: comp.position,
+        data: {
+          label: comp.type,
+          componentType: comp.type,
+          props: comp.props
+        }
+      })),
+      edges: []
+    }));
+
+    setScreens(newScreens);
+    setActiveScreenId(appStructure.initialScreenId || newScreens[0]?.id);
+    setShowAIInterface(false);
+    globalNodeId = 0;
+  };
+
   return (
     <div className="flex h-screen">
+      {/* AI Interface Modal */}
+      {showAIInterface && (
+        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+          <div className="bg-white rounded-lg max-w-2xl w-full mx-4 max-h-[90vh] overflow-y-auto">
+            <div className="flex justify-between items-center p-4 border-b">
+              <h2 className="text-xl font-bold">AI App Generator</h2>
+              <button
+                onClick={() => setShowAIInterface(false)}
+                className="text-gray-500 hover:text-gray-700 text-2xl"
+              >
+                ×
+              </button>
+            </div>
+            <TextToAppInterface onAppGenerated={handleAppGenerated} />
+          </div>
+        </div>
+      )}
+
       {/* Left Sidebar */}
       <div className="w-1/4 bg-gray-100 p-4 space-y-4 overflow-y-auto">
+        {/* AI Generator Button */}
+        <div>
+          <button
+            onClick={() => setShowAIInterface(true)}
+            className="w-full p-2 mb-2 bg-gradient-to-r from-purple-500 to-pink-500 text-white rounded hover:from-purple-600 hover:to-pink-600 font-bold"
+          >
+            🤖 Generate App from Text
+          </button>
+        </div>
         {/* Export Button */}
         <div>
           <button
