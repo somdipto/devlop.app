@@ -88,10 +88,10 @@ ${componentJSX}
 // This is the main function to generate App.js content
 const generateAppJsContent = (screens, initialScreenId) => {
   if (!screens || screens.length === 0) {
-    return \`import React from 'react';
+    return `import React from 'react';
 import { Text, View, StyleSheet } from 'react-native';
 export default function App() { return <View style={styles.container}><Text>No screens defined.</Text></View>; }
-const styles = StyleSheet.create({ container: { flex: 1, justifyContent: 'center', alignItems: 'center' }});\`;
+const styles = StyleSheet.create({ container: { flex: 1, justifyContent: 'center', alignItems: 'center' }});`;
   }
 
   const initialScreen = screens.find(s => s.id === initialScreenId);
@@ -114,32 +114,32 @@ const styles = StyleSheet.create({ container: { flex: 1, justifyContent: 'center
 
   // Separate React Native imports from other library imports
   const reactNativeImportItems = ['View', 'Text', 'StyleSheet', 'Button', 'Image', 'TextInput'].filter(i => allImports.has(i)); // Add any other RN specific ones
-  const rnImportString = reactNativeImportItems.length > 0 ? \`import { \${[...allImports].filter(i => reactNativeImportItems.includes(i)).join(', ')} } from 'react-native';\` : '';
+  const rnImportString = reactNativeImportItems.length > 0 ? `import { ${[...allImports].filter(i => reactNativeImportItems.includes(i)).join(', ')} } from 'react-native';` : '';
 
   // Specific library imports (React Navigation in this case)
-  const navImportString = \`import { NavigationContainer } from '@react-navigation/native';
-import { createStackNavigator } from '@react-navigation/stack';\`; // Corrected here too
+  const navImportString = `import { NavigationContainer } from '@react-navigation/native';
+import { createStackNavigator } from '@react-navigation/stack';`; // Corrected here too
 
-  const reactImportString = \`import React from 'react';\`; // Ensure React is imported first
+  const reactImportString = `import React from 'react';`; // Ensure React is imported first
 
-  return \`\${reactImportString}
-\${rnImportString}
-\${navImportString}
+  return `${reactImportString}
+${rnImportString}
+${navImportString}
 
 const Stack = createStackNavigator();
 
-\${screenFunctionsCode}
+${screenFunctionsCode}
 
 export default function App() {
   return (
     <NavigationContainer>
-      <Stack.Navigator initialRouteName={"\${initialScreenName}Screen"}>
-        {\`\${screens.map(screen => \`
+      <Stack.Navigator initialRouteName={"${initialScreenName}Screen"}>
+        ${screens.map(screen => `
           <Stack.Screen
-            name={"\${screen.name.replace(/\s+/g, '')}Screen"}
-            component={\${screen.name.replace(/\s+/g, '')}Screen}
-            options={{ title: '\${screen.name}' }}
-          />\`).join('\\n        ')}\`}
+            name={"${screen.name.replace(/\s+/g, '')}Screen"}
+            component={${screen.name.replace(/\s+/g, '')}Screen}
+            options={{ title: '${screen.name}' }}
+          />`).join('\n        ')}
       </Stack.Navigator>
     </NavigationContainer>
   );
@@ -155,9 +155,9 @@ const styles = StyleSheet.create({
   componentWrapper: {
     marginBottom: 10,
   },
-\${allStyleObjectsString}
+${allStyleObjectsString}
 });
-\`;
+`;
 };
 
 // --- End copied and adapted logic ---
@@ -194,11 +194,11 @@ const generatePackageJsonContent = (appName = 'MyReactNativeApp') => {
 // Generates a basic index.js file
 const generateIndexJsContent = (appName = 'MyReactNativeApp') => {
   const sanitizedAppName = appName.toLowerCase().replace(/\s+/g, '-');
-  return \`import {AppRegistry} from 'react-native';
+  return `import {AppRegistry} from 'react-native';
 import App from './App';
 import {name as appName} from './app.json';
 
-AppRegistry.registerComponent(appName, () => App);\`;
+AppRegistry.registerComponent(appName, () => App);`;
 };
 
 // Generates a basic app.json file
@@ -234,7 +234,7 @@ export const exportProjectAsZip = (screens, initialScreenId, appName = 'MyDesign
     .then(function(content) {
       const link = document.createElement('a');
       link.href = URL.createObjectURL(content);
-      link.download = \`\${appName.replace(/\s+/g, '-')}.zip\`; // Sanitize zip filename
+      link.download = `${appName.replace(/\s+/g, '-')}.zip`; // Sanitize zip filename
       document.body.appendChild(link);
       link.click();
       document.body.removeChild(link);

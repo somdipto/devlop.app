@@ -88,10 +88,10 @@ ${componentJSX}
 // Main code generation function
 const generateReactNativeCode = (screens, initialScreenId) => {
   if (!screens || screens.length === 0) {
-    return \`import React from 'react';
+    return `import React from 'react';
 import { Text, View, StyleSheet } from 'react-native';
 export default function App() { return <View style={styles.container}><Text>No screens defined.</Text></View>; }
-const styles = StyleSheet.create({ container: { flex: 1, justifyContent: 'center', alignItems: 'center' }});\`;
+const styles = StyleSheet.create({ container: { flex: 1, justifyContent: 'center', alignItems: 'center' }});`;
   }
 
   const initialScreen = screens.find(s => s.id === initialScreenId);
@@ -116,10 +116,10 @@ const styles = StyleSheet.create({ container: { flex: 1, justifyContent: 'center
   const reactNativeImportItems = ['View', 'Text', 'StyleSheet', 'Button', 'Image', 'TextInput'].filter(i => allImports.has(i));
   const rnImportString = reactNativeImportItems.length > 0 ? `import { ${reactNativeImportItems.join(', ')} } from 'react-native';` : '';
 
-  const navImportString = \`import { NavigationContainer } from '@react-navigation/native';
-import { createStackNavigator } from '@react-navigation/stack';\`; // Corrected here too
+  const navImportString = `import { NavigationContainer } from '@react-navigation/native';
+import { createStackNavigator } from '@react-navigation/stack';`; // Corrected here too
 
-  return \`
+  return `
 import React from 'react';
 ${rnImportString}
 ${navImportString}
@@ -132,12 +132,12 @@ export default function App() {
   return (
     <NavigationContainer>
       <Stack.Navigator initialRouteName={"${initialScreenName}Screen"}>
-        {\`\${screens.map(screen => \`
+        ${screens.map(screen => `
           <Stack.Screen
-            name={"\${screen.name.replace(/\s+/g, '')}Screen"}
-            component={\${screen.name.replace(/\s+/g, '')}Screen}
-            options={{ title: '\${screen.name}' }}
-          />\`).join('\\n        ')}\`}
+            name={"${screen.name.replace(/\s+/g, '')}Screen"}
+            component={${screen.name.replace(/\s+/g, '')}Screen}
+            options={{ title: '${screen.name}' }}
+          />`).join('\n        ')}
       </Stack.Navigator>
     </NavigationContainer>
   );
@@ -155,7 +155,7 @@ const styles = StyleSheet.create({
   },
 ${allStyleObjects}
 });
-\`;
+`;
 };
 
 const LivePreview = ({ screens, activeScreenId }) => { // activeScreenId is the initial screen for the navigator
